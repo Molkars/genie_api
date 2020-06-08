@@ -108,7 +108,10 @@ jobs:
             --input-spec specfile.json \
             --output /home/runner/actions-runner/_work/genie_api/genie_api \
             --config dart-client-config.yaml \
-            --enable-post-process-file
+            --enable-post-process-file \
+            --git-host github.com \
+            --git-repo-id genie_client_dart \
+            --git-user-id brandan-schmitz
       - name: Add and Commit Client Files
         uses: EndBug/add-and-commit@v4.2.0
         with:
@@ -226,7 +229,10 @@ jobs:
             --input-spec specfile.json \
             --output /home/runner/actions-runner/_work/genie_api/genie_api \
             --config dart-client-config.yaml \
-            --enable-post-process-file
+            --enable-post-process-file \
+            --git-host github.com \
+            --git-repo-id genie_client_dart \
+            --git-user-id brandan-schmitz
       - name: Add and Commit Client Files
         uses: EndBug/add-and-commit@v4.2.0
         with:
