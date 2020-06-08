@@ -1,0 +1,10 @@
+name: genie_api
+description: An aqueduct API for the makerspacegenie mobile app created by Dillon Shaffer
+version: 0.0.0
+author: Brandan Schmitz <brandan.schmitz@celestialdata.net>
+
+environment:
+  sdk: ">=2.7.2 <3.0.0"
+
+dependencies:
+  aqueduct: ^4.0.0-b1

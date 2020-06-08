@@ -1,0 +1,18 @@
+# Configuration settings for the connection to the PostgreSQL database
+database:
+ # Database Username
+ username: genie
+ # Database Password
+ password: genie
+ #IP or hostname of the database server
+ host: localhost
+ # Port of the database server
+ port: 5432
+ # Name of the database to use
+ databaseName: genie
+
+# The number of threads you want the API to create
+threads: 4
+
+# The port the API is served on
+port: 8888
