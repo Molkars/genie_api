@@ -1,0 +1,251 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - master
+      - development
+  push:
+    branches:
+      - master
+      - development
+
+jobs:
+  dev_deploy:
+    name: Deploy API (Development)
+    runs-on: self-hosted
+    if: ${{ github.ref == 'refs/heads/development' }}
+    outputs:
+      apiVersion: ${{ steps.create_version_tag.outputs.new_version }}
+    env:
+      PUB_CACHE: /home/aqueduct/development/.pub-cache
+    steps:
+      - name: Checkout API Repository
+        uses: actions/checkout@v2.2.0
+      - name: Create Version Tag
+        id: create_version_tag
+        uses: mathieudutour/github-tag-action@v4.5
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          tag_prefix: ''
+          create_annotated_tag: true
+          release_branches: master,development
+      - name: Stop genie-dev API Service
+        run: systemctl stop genie-dev
+      - name: Remove Old API
+        working-directory: /home/aqueduct/development/
+        run: rm -rf *
+      - name: Copy New API Sources
+        run: |
+          cp -r * /home/aqueduct/development/
+          cp /home/aqueduct/configs/development/* /home/aqueduct/development/
+      - name: Get Dependencies
+        run: |
+          rm -rf /home/aqueduct/development/.pub-cache
+          cd /home/aqueduct/development/
+          /usr/lib/dart/bin/pub get --no-precompile
+      - name: Set File Permission
+        run: |
+          chown -R aqueduct:aqueduct /home/aqueduct/development
+      - name: Run Database Migrations
+        working-directory: /home/aqueduct/development/
+        run: /usr/lib/dart/bin/pub run aqueduct:aqueduct db upgrade
+      - name: Add Auth Clients
+        working-directory: /home/aqueduct/development/
+        continue-on-error: true
+        run: /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client --id genie.mobile
+      - name: Generate API Docs
+        run: |
+          su - aqueduct
+          cd /home/aqueduct/development/
+          /usr/lib/dart/bin/pub run aqueduct:aqueduct document client \
+            --title "Makerspace Genie API (Dev)" \
+            --contact-email "brandan.schmitz@celestialdata.net" \
+            --contact-name "Brandan Schmitz" \
+            --host="https://genie-api-dev.celestialdata.net" \
+            --api-version "${{ steps.create_version_tag.outputs.new_version }}"
+      - name: Generate API Specfile
+        run: |
+          su - aqueduct
+          cd /home/aqueduct/development
+          /usr/lib/dart/bin/pub run aqueduct:aqueduct document \
+            --machine \
+            --title "Makerspace Genie API (Dev)" \
+            --contact-email "brandan.schmitz@celestialdata.net" \
+            --contact-name "Brandan Schmitz" \
+            --host="https://genie-api-dev.celestialdata.net" \
+            --api-version "${{ steps.create_version_tag.outputs.new_tag }}" \
+            > specfile.json
+      - name: Start genie-dev API Service
+        run: systemctl start genie-dev
+
+  dev_clients:
+    name: Generate Client Libraries (Dev)
+    runs-on: self-hosted
+    if: ${{ github.ref == 'refs/heads/development' }}
+    needs: dev_deploy
+    env:
+      GITHUB_REPOSITORY: brandan-schmitz/genie_client_dart
+    steps:
+      - name: Checkout Dart Client Repository
+        uses: actions/checkout@v2.2.0
+        with:
+          repository: brandan-schmitz/genie_client_dart
+          ref: development
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Set Client Version
+        run: |
+          su - aqueduct
+          cd /home/aqueduct/development/
+          sed -i '2s/.*/pubVersion: ${{ needs.dev_deploy.outputs.apiVersion }}/' dart-client-config.yaml
+      - name: Generate Dart API Client
+        working-directory: /home/aqueduct/development/
+        env:
+          DART_POST_PROCESS_FILE: /usr/lib/dart/bin/dartfmt -w
+        run: |
+          /usr/local/bin/openapi-generator generate \
+            --generator-name dart \
+            --input-spec specfile.json \
+            --output /home/runner/actions-runner/_work/genie_api/genie_api \
+            --config dart-client-config.yaml \
+            --enable-post-process-file
+      - name: Add and Commit Client Files
+        uses: EndBug/add-and-commit@v4.2.0
+        with:
+          author_name: Brandan Schmitz
+          author_email: brandan.schmitz@uj.edu
+          force: true
+          message: Updating Client for API v${{ needs.dev_deploy.outputs.apiVersion }}
+          ref: development
+          tag: ${{ needs.dev_deploy.outputs.apiVersion }}
+
+  prod_deploy:
+    name: Deploy API (Production)
+    runs-on: self-hosted
+    if: ${{ github.ref == 'refs/heads/master' }}
+    outputs:
+      apiVersion: ${{ steps.create_version_tag.outputs.new_version }}
+    env:
+      PUB_CACHE: /home/aqueduct/production/.pub-cache
+    steps:
+      - name: Checkout API Repository
+        uses: actions/checkout@v2.2.0
+      - name: Create Version Tag
+        id: create_version_tag
+        uses: mathieudutour/github-tag-action@v4.5
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          tag_prefix: ''
+          create_annotated_tag: true
+          release_branches: master,development
+      - name: Stop genie-prod API Service
+        run: systemctl stop genie-prod
+      - name: Remove Old API
+        working-directory: /home/aqueduct/production/
+        run: rm -rf *
+      - name: Copy New API Sources
+        run: |
+          cp -r * /home/aqueduct/production/
+          cp /home/aqueduct/configs/production/* /home/aqueduct/production/
+      - name: Get Dependencies
+        run: |
+          rm -rf /home/aqueduct/production/.pub-cache
+          cd /home/aqueduct/production/
+          /usr/lib/dart/bin/pub get --no-precompile
+      - name: Set File Permission
+        run: |
+          chown -R aqueduct:aqueduct /home/aqueduct/production
+      - name: Run Database Migrations
+        working-directory: /home/aqueduct/production/
+        run: /usr/lib/dart/bin/pub run aqueduct:aqueduct db upgrade
+      - name: Add Auth Clients
+        working-directory: /home/aqueduct/production/
+        continue-on-error: true
+        run: /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client --id genie.mobile
+      - name: Generate API Docs
+        run: |
+          su - aqueduct
+          cd /home/aqueduct/production/
+          /usr/lib/dart/bin/pub run aqueduct:aqueduct document client \
+            --title "Makerspace Genie API" \
+            --contact-email "brandan.schmitz@celestialdata.net" \
+            --contact-name "Brandan Schmitz" \
+            --host="https://genie-api.celestialdata.net" \
+            --api-version "${{ steps.create_version_tag.outputs.new_version }}"
+      - name: Generate API Specfile
+        run: |
+          su - aqueduct
+          cd /home/aqueduct/production
+          /usr/lib/dart/bin/pub run aqueduct:aqueduct document \
+            --machine \
+            --title "Makerspace Genie API" \
+            --contact-email "brandan.schmitz@celestialdata.net" \
+            --contact-name "Brandan Schmitz" \
+            --host="https://genie-api.celestialdata.net" \
+            --api-version "${{ steps.create_version_tag.outputs.new_tag }}" \
+            > specfile.json
+      - name: Start genie-prod API Service
+        run: systemctl start genie-prod
+      - name: Release Updated API Server
+        uses: brandan-schmitz/action-gh-release@v1.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_REF: refs/tags/${{ steps.create_version_tag.outputs.new_version }}
+        with:
+          tag_name: ${{ steps.create_version_tag.outputs.new_version }}
+          name: v${{ steps.create_version_tag.outputs.new_version }}
+          draft: false
+          prerelease: false
+
+  prod_clients:
+    name: Generate Client Libraries (Prod)
+    runs-on: self-hosted
+    if: ${{ github.ref == 'refs/heads/master' }}
+    needs: prod_deploy
+    env:
+      GITHUB_REPOSITORY: brandan-schmitz/genie_client_dart
+    steps:
+      - name: Checkout Dart Client Repository
+        uses: actions/checkout@v2.2.0
+        with:
+          repository: brandan-schmitz/genie_client_dart
+          ref: master
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Set Client Version
+        run: |
+          su - aqueduct
+          cd /home/aqueduct/production/
+          sed -i '2s/.*/pubVersion: v${{ needs.prod_deploy.outputs.apiVersion }}/' dart-client-config.yaml
+      - name: Generate Dart API Client
+        working-directory: /home/aqueduct/production/
+        env:
+          DART_POST_PROCESS_FILE: /usr/lib/dart/bin/dartfmt -w
+        run: |
+          /usr/local/bin/openapi-generator generate \
+            --generator-name dart \
+            --input-spec specfile.json \
+            --output /home/runner/actions-runner/_work/genie_api/genie_api \
+            --config dart-client-config.yaml \
+            --enable-post-process-file
+      - name: Add and Commit Client Files
+        uses: EndBug/add-and-commit@v4.2.0
+        with:
+          author_name: Brandan Schmitz
+          author_email: brandan.schmitz@uj.edu
+          force: true
+          message: Updating Client for API v${{ needs.prod_deploy.outputs.apiVersion }}
+          ref: master
+          tag: v${{ needs.prod_deploy.outputs.apiVersion }}
+      - name: Release Updated Dart Client
+        uses: brandan-schmitz/action-gh-release@v1.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_REF: refs/tags/$v${{ needs.prod_deploy.outputs.apiVersion }}
+        with:
+          tag_name: v${{ needs.prod_deploy.outputs.apiVersion }}
+          repository: brandan-schmitz/genie_client_dart
+          name: v${{ needs.prod_deploy.outputs.apiVersion }}
+          body: |
+            This client was updated to reflect changes in the [genie_api](https://github.com/brandan-schmitz/genie_client_dart) API.
+          draft: false
+          prerelease: false
