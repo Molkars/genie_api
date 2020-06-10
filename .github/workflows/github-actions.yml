@@ -218,7 +218,7 @@ jobs:
         run: |
           su - aqueduct
           cd /home/aqueduct/production/
-          sed -i '2s/.*/pubVersion: v${{ needs.prod_deploy.outputs.apiVersion }}/' dart-client-config.yaml
+          sed -i '2s/.*/pubVersion: ${{ needs.prod_deploy.outputs.apiVersion }}/' dart-client-config.yaml
       - name: Generate Dart API Client
         working-directory: /home/aqueduct/production/
         env:

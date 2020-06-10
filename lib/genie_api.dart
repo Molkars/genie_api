@@ -7,7 +7,6 @@ export 'package:aqueduct/aqueduct.dart';
 export 'package:aqueduct/managed_auth.dart';
 
 export 'channel.dart';
-export 'controller/api_docs_controller.dart';
 export 'controller/identity_controller.dart';
 export 'controller/makerspace_controller.dart';
 export 'controller/register_controller.dart';

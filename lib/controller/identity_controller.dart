@@ -24,4 +24,18 @@ class IdentityController extends ResourceController {
     // Return the user from the database
     return Response.ok(_user);
   }
+
+  @override
+  Map<String, APIResponse> documentOperationResponses(APIDocumentContext context, Operation operation) {
+    var _userSchema = context.schema.getObjectWithType(User);
+
+    context.defer(() {
+      _userSchema = context.document.components.resolve(_userSchema);
+      _userSchema.properties.remove("tokens");
+    });
+
+    return {
+      "200": APIResponse.schema("Identity Fetched Successfully.", _userSchema),
+    };
+  }
 }

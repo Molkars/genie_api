@@ -34,12 +34,10 @@ class UserController extends ResourceController {
   /// Update the [User] with the specified [id]. All values from the [User] object are
   /// valid except the password and id fields.
   @Operation.put('id')
-  Future<Response> updateUser(@Bind.path('id') int id, @Bind.body() User user) async {
-    /* Uncomment this to allow user accounts to only be updated by their own user.
+  Future<Response> updateUser(@Bind.path('id') int id, @Bind.body(ignore: ["id"]) User user) async {
     if (request.authorization.ownerID != id) {
       Response.unauthorized();
     }
-     */
 
     // Update the user in the DB using the values provided
     final _user = await (Query<User>(context)
@@ -75,5 +73,23 @@ class UserController extends ResourceController {
 
     // Return an empty success code showing the user was deleted
     return Response.ok(null);
+  }
+
+  @override
+  Map<String, APIResponse> documentOperationResponses(APIDocumentContext context, Operation operation) {
+    if (operation.pathVariables.isEmpty && operation.method == "GET") {
+      return {
+        "200": APIResponse.schema("Users Fetched Successfully", context.schema.getObjectWithType(User))
+      };
+    } else if (operation.pathVariables.isNotEmpty && operation.method == "GET") {
+      return {
+        "200": APIResponse.schema("User Fetched Successfully", context.schema.getObjectWithType(User))
+      };
+    } else if (operation.pathVariables.isNotEmpty && operation.method == "POST") {
+      return {
+        "200": APIResponse.schema("User Updated Successfully", context.schema.getObjectWithType(User))
+      };
+    }
+    return null;
   }
 }
