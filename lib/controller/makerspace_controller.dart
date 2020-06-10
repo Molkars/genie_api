@@ -117,11 +117,11 @@ class MakerspaceController extends ResourceController {
       return {
         "200": APIResponse.schema("Makerspace Fetched Successfully", context.schema.getObjectWithType(Makerspace))
       };
-    } else if (operation.pathVariables.isNotEmpty && operation.method == "PATCH") {
+    } else if (operation.pathVariables.isEmpty && operation.method == "POST") {
       return {
         "200": APIResponse.schema("Makerspace Created Successfully", context.schema.getObjectWithType(Makerspace))
       };
-    } else if (operation.pathVariables.isNotEmpty && operation.method == "PUT") {
+    } else if (operation.pathVariables.isNotEmpty && operation.method == "PATCH") {
       return {
         "200": APIResponse.schema("Makerspace Updated Successfully", context.schema.getObjectWithType(Makerspace))
       };

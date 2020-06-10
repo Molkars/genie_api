@@ -33,8 +33,8 @@ class UserController extends ResourceController {
 
   /// Update the [User] with the specified [id]. All values from the [User] object are
   /// valid except the password and id fields.
-  @Operation.put('id')
-  Future<Response> updateUser(@Bind.path('id') int id, @Bind.body(ignore: ["id"]) User user) async {
+  @Operation('PATCH', 'id')
+  Future<Response> updateUser(@Bind.path('id') int id, @Bind.body(ignore: ["id", "password"]) User user) async {
     if (request.authorization.ownerID != id) {
       Response.unauthorized();
     }
@@ -85,7 +85,7 @@ class UserController extends ResourceController {
       return {
         "200": APIResponse.schema("User Fetched Successfully", context.schema.getObjectWithType(User))
       };
-    } else if (operation.pathVariables.isNotEmpty && operation.method == "POST") {
+    } else if (operation.pathVariables.isNotEmpty && operation.method == "PATCH") {
       return {
         "200": APIResponse.schema("User Updated Successfully", context.schema.getObjectWithType(User))
       };
