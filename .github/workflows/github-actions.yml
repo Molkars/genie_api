@@ -112,6 +112,13 @@ jobs:
             --git-host github.com \
             --git-repo-id genie_client_dart \
             --git-user-id brandan-schmitz
+      - name: Correct HTTP package overlap
+        working-directory: /home/runner/actions-runner/_work/genie_api/genie_api/lib
+        run: |
+          sed -i 's/import '\''package:http\/http.dart'\'';/import '\''package:http\/http.dart'\'' as http;/' api.dart
+          sed -i 's/var client = Client();/var client = http.Client();/' api_client.dart
+          gsed -i 's/\bResponse/http.Response/g' **/*.dart
+          gsed -i 's/\bMultipartRequest/http.MultipartRequest/g' **/*.dart
       - name: Add and Commit Client Files
         uses: EndBug/add-and-commit@v4.2.0
         with:
@@ -233,6 +240,13 @@ jobs:
             --git-host github.com \
             --git-repo-id genie_client_dart \
             --git-user-id brandan-schmitz
+      - name: Correct HTTP package overlap
+        working-directory: /home/runner/actions-runner/_work/genie_api/genie_api/lib
+        run: |
+          sed -i 's/import '\''package:http\/http.dart'\'';/import '\''package:http\/http.dart'\'' as http;/' api.dart
+          sed -i 's/var client = Client();/var client = http.Client();/' api_client.dart
+          gsed -i 's/\bResponse/http.Response/g' **/*.dart
+          gsed -i 's/\bMultipartRequest/http.MultipartRequest/g' **/*.dart
       - name: Add and Commit Client Files
         uses: EndBug/add-and-commit@v4.2.0
         with:

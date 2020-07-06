@@ -1,5 +1,7 @@
 # genie_api
 
+![CI Pipeline](https://github.com/brandan-schmitz/genie_api/workflows/CI%20Pipeline/badge.svg?branch=development)
+
 ## Database
 
 You will need a local database for testing, and another database for running the application locally. The behavior and configuration of these databases are documented here: http://aqueduct.io/docs/testing/mixins/.

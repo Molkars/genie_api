@@ -18,4 +18,5 @@ config.yaml
 api.json
 client.html
 database.yaml
-/specfile.json
+specfile.json
+specfile.yaml
