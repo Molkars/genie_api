@@ -117,8 +117,8 @@ jobs:
         run: |
           sed -i 's/import '\''package:http\/http.dart'\'';/import '\''package:http\/http.dart'\'' as http;/' api.dart
           sed -i 's/var client = Client();/var client = http.Client();/' api_client.dart
-          gsed -i 's/\bResponse/http.Response/g' **/*.dart
-          gsed -i 's/\bMultipartRequest/http.MultipartRequest/g' **/*.dart
+          sed -i 's/\bResponse/http.Response/g' **/*.dart
+          sed -i 's/\bMultipartRequest/http.MultipartRequest/g' **/*.dart
       - name: Add and Commit Client Files
         uses: EndBug/add-and-commit@v4.2.0
         with:
@@ -245,8 +245,8 @@ jobs:
         run: |
           sed -i 's/import '\''package:http\/http.dart'\'';/import '\''package:http\/http.dart'\'' as http;/' api.dart
           sed -i 's/var client = Client();/var client = http.Client();/' api_client.dart
-          gsed -i 's/\bResponse/http.Response/g' **/*.dart
-          gsed -i 's/\bMultipartRequest/http.MultipartRequest/g' **/*.dart
+          sed -i 's/\bResponse/http.Response/g' **/*.dart
+          sed -i 's/\bMultipartRequest/http.MultipartRequest/g' **/*.dart
       - name: Add and Commit Client Files
         uses: EndBug/add-and-commit@v4.2.0
         with:
