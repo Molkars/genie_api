@@ -53,7 +53,10 @@ jobs:
       - name: Add Auth Clients
         working-directory: /home/aqueduct/development/
         continue-on-error: true
-        run: /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client --id genie.mobile
+        run: |
+          /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client \
+            --id io.makerspacegenie.mobile \
+            --secret geniesecret
       - name: Generate API Docs
         run: |
           su - aqueduct
@@ -171,7 +174,10 @@ jobs:
       - name: Add Auth Clients
         working-directory: /home/aqueduct/production/
         continue-on-error: true
-        run: /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client --id genie.mobile
+        run: |
+          /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client \
+            --id io.makerspacegenie.mobile \
+            --secret geniesecret
       - name: Generate API Docs
         run: |
           su - aqueduct

@@ -12,7 +12,7 @@ class _User extends ResourceOwnerTableDefinition {
   @Column()
   String lastName;
 
-  @Column()
+  @Column(unique: true)
   String email;
 
   @Column(nullable: true)

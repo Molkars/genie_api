@@ -42,12 +42,12 @@ class GenieApiChannel extends ApplicationChannel {
         ..contentType = ContentType.html;
     });
 
-    // Create and account on the system
+    // Create an account on the system
     router.route("/register")
         .link(() => RegisterController(context, authServer));
 
     // Handles logging into the system
-    router.route("/login")
+    router.route("/auth/token")
         .link(() => AuthController(authServer));
 
     // Returns the currently logged in users information
@@ -56,13 +56,13 @@ class GenieApiChannel extends ApplicationChannel {
         .link(() => IdentityController(context));
 
     // Handles all the users routes
-    router.route("/users/[:id]")
+    router.route("/users/[:id([0-9]+)]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserController(context, authServer));
 
     // Handles all the makerspace routes
     router
-        .route("/makerspace/[:id]")
+        .route("/makerspace/[:id([0-9]+)]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => MakerspaceController(context));
 

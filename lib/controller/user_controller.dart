@@ -77,19 +77,16 @@ class UserController extends ResourceController {
 
   @override
   Map<String, APIResponse> documentOperationResponses(APIDocumentContext context, Operation operation) {
+    final Map<String, APIResponse> _response = {};
+
     if (operation.pathVariables.isEmpty && operation.method == "GET") {
-      return {
-        "200": APIResponse.schema("Users Fetched Successfully", context.schema.getObjectWithType(User))
-      };
+      _response['200'] = APIResponse.schema("Users Fetched Successfully", APISchemaObject.array(ofSchema: context.schema.getObjectWithType(User)));
     } else if (operation.pathVariables.isNotEmpty && operation.method == "GET") {
-      return {
-        "200": APIResponse.schema("User Fetched Successfully", context.schema.getObjectWithType(User))
-      };
+      _response['200'] = APIResponse.schema("User Fetched Successfully", context.schema.getObjectWithType(User));
     } else if (operation.pathVariables.isNotEmpty && operation.method == "PATCH") {
-      return {
-        "200": APIResponse.schema("User Updated Successfully", context.schema.getObjectWithType(User))
-      };
+      _response['200'] = APIResponse.schema("User Updated Successfully", context.schema.getObjectWithType(User));
     }
-    return null;
+
+    return _response;
   }
 }

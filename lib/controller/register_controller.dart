@@ -18,7 +18,7 @@ class RegisterController extends ResourceController {
       ..hashedPassword = authServer.hashPassword(user.password, user.salt);
 
     // Return the new user
-    return Response.ok(await (Query<User>(context)..values = user).insert());
+    return Response.ok(await Query<User>(context, values: user).insert());
   }
 
   @override

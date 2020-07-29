@@ -109,23 +109,18 @@ class MakerspaceController extends ResourceController {
 
   @override
   Map<String, APIResponse> documentOperationResponses(APIDocumentContext context, Operation operation) {
+    final Map<String, APIResponse> _response = {};
+
     if (operation.pathVariables.isEmpty && operation.method == "GET") {
-      return {
-        "200": APIResponse.schema("Makerspaces Fetched Successfully", context.schema.getObjectWithType(Makerspace))
-      };
+      _response['200'] = APIResponse.schema("Makerspaces Fetched Successfully", APISchemaObject.array(ofSchema: context.schema.getObjectWithType(Makerspace)));
     } else if (operation.pathVariables.isNotEmpty && operation.method == "GET") {
-      return {
-        "200": APIResponse.schema("Makerspace Fetched Successfully", context.schema.getObjectWithType(Makerspace))
-      };
+      _response['200'] = APIResponse.schema("Makerspace Fetched Successfully", context.schema.getObjectWithType(Makerspace));
     } else if (operation.pathVariables.isEmpty && operation.method == "POST") {
-      return {
-        "200": APIResponse.schema("Makerspace Created Successfully", context.schema.getObjectWithType(Makerspace))
-      };
+      _response['201'] = APIResponse.schema("Makerspace Created Successfully", context.schema.getObjectWithType(Makerspace));
     } else if (operation.pathVariables.isNotEmpty && operation.method == "PATCH") {
-      return {
-        "200": APIResponse.schema("Makerspace Updated Successfully", context.schema.getObjectWithType(Makerspace))
-      };
+      _response['200'] = APIResponse.schema("Makerspace Updated Successfully", context.schema.getObjectWithType(Makerspace));
     }
-    return null;
+
+    return _response;
   }
 }
