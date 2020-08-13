@@ -65,7 +65,7 @@ jobs:
             --title "Makerspace Genie API (Dev)" \
             --contact-email "brandan.schmitz@celestialdata.net" \
             --contact-name "Brandan Schmitz" \
-            --host="https://genie-api-dev.celestialdata.net" \
+            --host="https://genie-api-dev.makerspacegenie.app" \
             --api-version "${{ steps.create_version_tag.outputs.new_version }}"
       - name: Generate API Specfile
         run: |
@@ -76,7 +76,7 @@ jobs:
             --title "Makerspace Genie API (Dev)" \
             --contact-email "brandan.schmitz@celestialdata.net" \
             --contact-name "Brandan Schmitz" \
-            --host="https://genie-api-dev.celestialdata.net" \
+            --host="https://genie-api-dev.makerspacegenie.app" \
             --api-version "${{ steps.create_version_tag.outputs.new_tag }}" \
             > specfile.json
       - name: Start genie-dev API Service
@@ -186,7 +186,7 @@ jobs:
             --title "Makerspace Genie API" \
             --contact-email "brandan.schmitz@celestialdata.net" \
             --contact-name "Brandan Schmitz" \
-            --host="https://genie-api.celestialdata.net" \
+            --host="https://genie-api.makerspacegenie.app" \
             --api-version "${{ steps.create_version_tag.outputs.new_version }}"
       - name: Generate API Specfile
         run: |
@@ -197,7 +197,7 @@ jobs:
             --title "Makerspace Genie API" \
             --contact-email "brandan.schmitz@celestialdata.net" \
             --contact-name "Brandan Schmitz" \
-            --host="https://genie-api.celestialdata.net" \
+            --host="https://genie-api.makerspacegenie.app" \
             --api-version "${{ steps.create_version_tag.outputs.new_tag }}" \
             > specfile.json
       - name: Start genie-prod API Service
