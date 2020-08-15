@@ -16,7 +16,7 @@ class PasswordResetController extends ResourceController {
   Future<Response> requestToken(@Bind.query('email') String email) async {
     // Get the user from the database
     final _user = await (Query<User>(context)
-      ..where((u) => u.email.toLowerCase()).equalTo(email.toLowerCase())
+      ..where((u) => u.email).equalTo(email.toLowerCase())
     ).fetchOne();
 
     // Return an error if the user was not found for some reason
