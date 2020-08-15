@@ -19,4 +19,6 @@ class _User extends ResourceOwnerTableDefinition {
   String profilePictureUrl;
 
   ManagedSet<Makerspace> makerspacesOwned;
+
+  ManagedSet<PasswordResetToken> passwordResetTokens;
 }

@@ -8,3 +8,5 @@ environment:
 
 dependencies:
   aqueduct: ^4.0.0-b1
+  #aqueduct: ^3.3.0+1
+  mailer: ^3.0.4

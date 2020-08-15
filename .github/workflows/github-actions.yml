@@ -55,7 +55,7 @@ jobs:
         continue-on-error: true
         run: |
           /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client \
-            --id io.makerspacegenie.mobile \
+            --id app.makerspacegenie.mobile \
             --secret geniesecret
       - name: Generate API Docs
         run: |
@@ -176,7 +176,7 @@ jobs:
         continue-on-error: true
         run: |
           /usr/lib/dart/bin/pub run aqueduct:aqueduct auth add-client \
-            --id io.makerspacegenie.mobile \
+            --id app.makerspacegenie.mobile \
             --secret geniesecret
       - name: Generate API Docs
         run: |

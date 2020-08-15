@@ -7,4 +7,9 @@ class GenieApiConfiguration extends Configuration {
   DatabaseConfiguration database;
   int threads;
   int port;
+
+  int smtpPort;
+  String smtpHost;
+  String smtpUsername;
+  String smtpPassword;
 }

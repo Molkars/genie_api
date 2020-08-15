@@ -12,7 +12,7 @@ class IdentityController extends ResourceController {
   Future<Response> getIdentity() async {
     // Get the user from the database
     final _user = await (Query<User>(context)
-      ..where((o) => o.id).equalTo(request.authorization.ownerID)
+      ..where((u) => u.id).equalTo(request.authorization.ownerID)
       ..join(set: (user) => user.makerspacesOwned)
     ).fetchOne();
 

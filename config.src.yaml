@@ -16,3 +16,15 @@ threads: 4
 
 # The port the API is served on
 port: 8888
+
+# The port of the email server
+smtpPort: 465
+
+# The host address of the email server
+smtpHost: some.domain.com
+
+# The username to the email server
+smtpUsername: something@example.com
+
+# The password to the email server
+smtpPassword: somepassword

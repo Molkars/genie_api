@@ -50,6 +50,9 @@ class GenieApiChannel extends ApplicationChannel {
     router.route("/auth/token")
         .link(() => AuthController(authServer));
 
+    router.route("/reset-password/[:token]")
+        .link(() => PasswordResetController(context, authServer, _config));
+
     // Returns the currently logged in users information
     router.route("/me")
         .link(() => Authorizer.bearer(authServer))
