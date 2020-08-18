@@ -25,7 +25,7 @@ class GenieApiChannel extends ApplicationChannel {
     context = contextWithConnectionInfo(_config.database);
 
     // Configure the AuthServer
-    final authStorage = ManagedAuthDelegate<User>(context);
+    final authStorage = ManagedAuthDelegate<User>(context, tokenLimit: 10);
     authServer = AuthServer(authStorage);
   }
 
@@ -50,6 +50,7 @@ class GenieApiChannel extends ApplicationChannel {
     router.route("/auth/token")
         .link(() => AuthController(authServer));
 
+    // Handles resetting user account passwords
     router.route("/reset-password/[:token]")
         .link(() => PasswordResetController(context, authServer, _config));
 
